@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" spacing="15" xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Tic Tac Toe">
+        <font>
+            <Font name="Arial Bold" size="24"/>
+        </font>
+    </Label>
+
+    <Label text="Your Name:"/>
+    <TextField fx:id="nameField" promptText="Enter your name"/>
+
+    <Label text="Board Size:"/>
+    <HBox spacing="10" alignment="CENTER">
+        <RadioButton fx:id="size3x3" text="3x3" selected="true">
+            <toggleGroup>
+                <ToggleGroup fx:id="sizeGroup"/>
+            </toggleGroup>
+        </RadioButton>
+        <RadioButton fx:id="size4x4" text="4x4" toggleGroup="$sizeGroup"/>
+        <RadioButton fx:id="size5x5" text="5x5" toggleGroup="$sizeGroup"/>
+    </HBox>
+
+    <Button fx:id="playButton" text="Play" prefWidth="100"/>
+</VBox>

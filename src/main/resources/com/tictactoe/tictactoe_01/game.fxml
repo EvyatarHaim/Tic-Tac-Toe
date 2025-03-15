@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <top>
+        <VBox alignment="CENTER" spacing="10">
+            <Label fx:id="statusLabel">
+                <font>
+                    <Font name="Arial" size="14"/>
+                </font>
+            </Label>
+        </VBox>
+    </top>
+
+    <center>
+        <GridPane fx:id="boardGrid" alignment="CENTER" hgap="5" vgap="5"/>
+    </center>
+
+    <bottom>
+        <BorderPane>
+            <left>
+                <Label fx:id="timerLabel" text="Time: 0:00">
+                    <font>
+                        <Font name="Arial" size="14"/>
+                    </font>
+                </Label>
+            </left>
+        </BorderPane>
+    </bottom>
+</BorderPane>

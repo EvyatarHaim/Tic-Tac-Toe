@@ -1,7 +1,9 @@
 package com.tictactoe.server;
 
 import com.tictactoe.Utils;
+import com.tictactoe.db.DatabaseManager;
 import com.tictactoe.game.Game;
+import com.tictactoe.game.GameResult;
 import com.tictactoe.game.Player;
 
 public class GameSession {
@@ -93,6 +95,20 @@ public class GameSession {
     }
 
     /**
+     * Check if it's the given player's turn
+     */
+    public boolean isPlayerTurn(Player player) {
+        return game.isPlayerTurn(player);
+    }
+
+    /**
+     * Get the current game state
+     */
+    public Game getGame() {
+        return game;
+    }
+
+    /**
      * End the game and notify both players
      */
     private void endGame(long gameDuration) {
@@ -109,19 +125,25 @@ public class GameSession {
 
         player1Handler.sendMessage(gameOverMessage);
         player2Handler.sendMessage(gameOverMessage);
-    }
 
-    /**
-     * Check if it's the given player's turn
-     */
-    public boolean isPlayerTurn(Player player) {
-        return game.isPlayerTurn(player);
-    }
+        // Save game result to the database
+        GameResult.Result resultEnum;
+        if (winner != null) {
+            resultEnum = GameResult.Result.WIN;
+        } else {
+            resultEnum = GameResult.Result.TIE;
+        }
 
-    /**
-     * Get the current game state
-     */
-    public Game getGame() {
-        return game;
+        GameResult gameResult = new GameResult(resultEnum, winner, gameDuration);
+
+        // Save game result in a separate thread to avoid blocking
+        new Thread(() -> {
+            try {
+                DatabaseManager dbManager = DatabaseManager.getInstance();
+                dbManager.saveGameResult(player1, player2, gameResult, game.getBoardSize());
+            } catch (Exception e) {
+                System.err.println("Error saving game result to database: " + e.getMessage());
+            }
+        }).start();
     }
 }

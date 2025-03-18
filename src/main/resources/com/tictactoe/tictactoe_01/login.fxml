@@ -30,6 +30,9 @@
         <RadioButton fx:id="size4x4" text="4x4" toggleGroup="$sizeGroup"/>
         <RadioButton fx:id="size5x5" text="5x5" toggleGroup="$sizeGroup"/>
     </HBox>
-
-    <Button fx:id="playButton" text="Play" prefWidth="100"/>
+    <!-- Add this to your LoginScreen.fxml -->
+    <HBox alignment="CENTER" spacing="10">
+        <Button fx:id="playButton" text="Play" prefWidth="100"/>
+        <Button fx:id="statsButton" text="Statistics" prefWidth="100"/>
+    </HBox>
 </VBox>

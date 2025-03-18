@@ -1,6 +1,7 @@
 package com.tictactoe.server;
 
 import com.tictactoe.Utils;
+import com.tictactoe.db.DatabaseManager;
 import com.tictactoe.game.Player;
 import com.tictactoe.game.Game;
 
@@ -25,6 +26,10 @@ public class Server {
 
     public void start() {
         try {
+            // Initialize database
+            DatabaseManager.getInstance();
+            System.out.println("Database initialized successfully");
+
             serverSocket = new ServerSocket(Utils.SERVER_PORT);
             running = true;
             System.out.println("TicTacToe Server started on port " + Utils.SERVER_PORT);

@@ -13,6 +13,7 @@ public class App extends Application {
     private WaitingScreen waitingScreen;
     private GameScreen gameScreen;
     private GameOverScreen gameOverScreen;
+    private StatsScreen statsScreen;
 
     @Override
     public void start(Stage primaryStage) {
@@ -97,6 +98,18 @@ public class App extends Application {
      */
     public void showLoginScreen() {
         primaryStage.setScene(loginScreen.getScene());
+    }
+
+    /**
+     * Show the statistics screen
+     */
+    public void showStatsScreen() {
+        System.out.println("Showing stats screen");
+        if (statsScreen == null) {
+            System.out.println("Creating new stats screen");
+            statsScreen = new StatsScreen(this);
+        }
+        primaryStage.setScene(statsScreen.getScene());
     }
 
     /**

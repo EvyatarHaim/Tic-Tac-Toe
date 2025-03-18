@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <top>
+        <VBox alignment="CENTER" spacing="10">
+            <Label text="Game Statistics">
+                <font>
+                    <Font name="Arial Bold" size="24"/>
+                </font>
+            </Label>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox spacing="20">
+            <VBox spacing="10">
+                <Label text="Top Players">
+                    <font>
+                        <Font name="Arial Bold" size="16"/>
+                    </font>
+                </Label>
+                <TableView fx:id="playerTable" prefHeight="200">
+                    <columns>
+                        <TableColumn text="Name" prefWidth="150">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="name"/>
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn text="Games Played" prefWidth="100">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="gamesPlayed"/>
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn text="Games Won" prefWidth="100">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="gamesWon"/>
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn text="Games Lost" prefWidth="100">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="gamesLost"/>
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn text="Games Tied" prefWidth="100">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="gamesTied"/>
+                            </cellValueFactory>
+                        </TableColumn>
+                    </columns>
+                </TableView>
+            </VBox>
+
+            <VBox spacing="10">
+                <Label text="Recent Games">
+                    <font>
+                        <Font name="Arial Bold" size="16"/>
+                    </font>
+                </Label>
+                <TableView fx:id="gameTable" prefHeight="300">
+                    <columns>
+                        <TableColumn text="Player 1" prefWidth="120"/>
+                        <TableColumn text="Player 2" prefWidth="120"/>
+                        <TableColumn text="Result" prefWidth="80">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="result"/>
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn text="Winner" prefWidth="120"/>
+                        <TableColumn text="Board Size" prefWidth="80">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="boardSize"/>
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn text="Duration" prefWidth="80"/>
+                        <TableColumn text="Played At" prefWidth="150"/>
+                    </columns>
+                </TableView>
+            </VBox>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER" spacing="10">
+            <Button fx:id="backButton" text="Back to Login" prefWidth="120"/>
+        </HBox>
+    </bottom>
+</BorderPane>

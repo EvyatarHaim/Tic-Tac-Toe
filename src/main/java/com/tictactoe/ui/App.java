@@ -3,10 +3,22 @@ package com.tictactoe.ui;
 
 import com.tictactoe.Utils;
 import com.tictactoe.client.Client;
+import com.tictactoe.db.DatabaseManager;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
 public class App extends Application {
+
+    static {
+        try {
+            DatabaseManager.getInstance();
+            System.out.println("Database initialized at application startup");
+        } catch (Exception e) {
+            System.err.println("Failed to initialize database: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     private Client client;
     private Stage primaryStage;
     private LoginScreen loginScreen;

@@ -48,7 +48,7 @@ public class PlayerDB extends BaseDB<PlayerEntity> {
 
     @Override
     protected PreparedStatement createInsertStatement(Connection conn, PlayerEntity entity) throws SQLException {
-        PreparedStatement pstmt = conn.prepareStatement(createInsertSql(entity), PreparedStatement.RETURN_GENERATED_KEYS);
+        PreparedStatement pstmt = conn.prepareStatement(createInsertSql(entity), java.sql.Statement.RETURN_GENERATED_KEYS);
         pstmt.setString(1, entity.getName());
         pstmt.setInt(2, entity.getGamesPlayed());
         pstmt.setInt(3, entity.getGamesWon());

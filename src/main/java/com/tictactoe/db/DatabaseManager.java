@@ -22,6 +22,9 @@ public class DatabaseManager {
      * Private constructor to enforce singleton pattern
      */
     private DatabaseManager() {
+        // Initialize database configuration
+        DatabaseConfig.init();
+
         // Initialize database
         BaseDB.initDatabase();
 

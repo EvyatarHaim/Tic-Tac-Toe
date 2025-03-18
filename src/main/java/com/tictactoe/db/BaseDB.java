@@ -12,8 +12,10 @@ import java.util.List;
 public abstract class BaseDB<T extends BaseEntity> {
 
     // Database connection information
-    private static final String DB_URL = "jdbc:sqlite:tictactoe.db";
-    private static final String DB_DRIVER = "org.sqlite.JDBC";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/tictactoe";
+    private static final String DB_USER = "root";
+    private static final String DB_PASSWORD = "Evyatar159"; // Change to your MySQL password
+    private static final String DB_DRIVER = "com.mysql.cj.jdbc.Driver";
 
     // Change log lists to track changes
     private List<ChangeEntity> changeLog = new ArrayList<>();
@@ -31,7 +33,7 @@ public abstract class BaseDB<T extends BaseEntity> {
      * Get a connection to the database
      */
     protected Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(DB_URL);
+        return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
     }
 
     /**
@@ -167,7 +169,7 @@ public abstract class BaseDB<T extends BaseEntity> {
                         // Some JDBC drivers may not support getGeneratedKeys()
                         // In this case, we perform a separate query to get the last inserted ID
                         try (Statement stmt = conn.createStatement();
-                             ResultSet rs = stmt.executeQuery("SELECT last_insert_rowid()")) {
+                             ResultSet rs = stmt.executeQuery("SELECT LAST_INSERT_ID()")) {
                             if (rs.next()) {
                                 change.getEntity().setId(rs.getInt(1));
                             }
@@ -204,28 +206,28 @@ public abstract class BaseDB<T extends BaseEntity> {
      * Create the database tables if they don't exist
      */
     public static void initDatabase() {
-        try (Connection conn = DriverManager.getConnection(DB_URL)) {
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
             // Create tables
             try (Statement stmt = conn.createStatement()) {
                 // Create players table
                 stmt.execute("CREATE TABLE IF NOT EXISTS players (" +
-                        "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        "name TEXT NOT NULL," +
-                        "games_played INTEGER DEFAULT 0," +
-                        "games_won INTEGER DEFAULT 0," +
-                        "games_lost INTEGER DEFAULT 0," +
-                        "games_tied INTEGER DEFAULT 0" +
+                        "id INT AUTO_INCREMENT PRIMARY KEY," +
+                        "name VARCHAR(255) NOT NULL," +
+                        "games_played INT DEFAULT 0," +
+                        "games_won INT DEFAULT 0," +
+                        "games_lost INT DEFAULT 0," +
+                        "games_tied INT DEFAULT 0" +
                         ")");
 
                 // Create games table
                 stmt.execute("CREATE TABLE IF NOT EXISTS games (" +
-                        "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                        "player1_id INTEGER NOT NULL," +
-                        "player2_id INTEGER NOT NULL," +
-                        "winner_id INTEGER," +  // NULL or 0 for a tie
-                        "result TEXT NOT NULL," +
-                        "board_size INTEGER NOT NULL," +
-                        "duration INTEGER NOT NULL," +
+                        "id INT AUTO_INCREMENT PRIMARY KEY," +
+                        "player1_id INT NOT NULL," +
+                        "player2_id INT NOT NULL," +
+                        "winner_id INT," +  // NULL or 0 for a tie
+                        "result VARCHAR(10) NOT NULL," +
+                        "board_size INT NOT NULL," +
+                        "duration BIGINT NOT NULL," +
                         "played_at TIMESTAMP NOT NULL," +
                         "FOREIGN KEY (player1_id) REFERENCES players (id)," +
                         "FOREIGN KEY (player2_id) REFERENCES players (id)," +

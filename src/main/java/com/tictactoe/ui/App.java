@@ -1,4 +1,3 @@
-// com.tictactoe.ui.App
 package com.tictactoe.ui;
 
 import com.tictactoe.Utils;
@@ -11,6 +10,7 @@ public class App extends Application {
 
     static {
         try {
+            // Initialize database with MySQL configuration
             DatabaseManager.getInstance();
             System.out.println("Database initialized at application startup");
         } catch (Exception e) {

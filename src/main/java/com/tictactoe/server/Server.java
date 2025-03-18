@@ -26,7 +26,7 @@ public class Server {
 
     public void start() {
         try {
-            // Initialize database
+            // Initialize database with MySQL configuration
             DatabaseManager.getInstance();
             System.out.println("Database initialized successfully");
 

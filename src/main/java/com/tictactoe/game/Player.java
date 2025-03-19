@@ -16,6 +16,7 @@ public class Player {
         this.name = name;
     }
 
+    // symbol (X or O)
     public char getSymbol() {
         return symbol;
     }

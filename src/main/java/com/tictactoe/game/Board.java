@@ -1,20 +1,20 @@
-// com.tictactoe.game.Board
 package com.tictactoe.game;
 
 import com.tictactoe.Utils;
 import java.io.Serializable;
 
 public class Board implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1;
 
-    private char[][] grid;
-    private int size;
+    private char[][] grid;  // Matrix that represents the game board
+    private int size;   // size of the board (3x3, 4x4, or 5x5)
 
+    // creates a new empty board with given size
     public Board(int size) {
         this.size = size;
         this.grid = new char[size][size];
 
-        // Initialize board with empty spaces
+        // fills the board cells with empty spaces
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 grid[i][j] = Utils.SYMBOL_EMPTY;
@@ -22,22 +22,25 @@ public class Board implements Serializable {
         }
     }
 
+    // checks if move at given position is valid
     public boolean isValidMove(int row, int col) {
-        // Check if position is within bounds
+        // check if position is within board boundaries
         if (row < 0 || row >= size || col < 0 || col >= size) {
             return false;
         }
 
-        // Check if position is empty
+        // check if position is empty
         return grid[row][col] == Utils.SYMBOL_EMPTY;
     }
 
+    // places a symbol at the given position
     public void makeMove(int row, int col, char symbol) {
         if (isValidMove(row, col)) {
             grid[row][col] = symbol;
         }
     }
 
+    // gets the symbol at a specific position
     public char getSymbolAt(int row, int col) {
         if (row < 0 || row >= size || col < 0 || col >= size) {
             return ' ';
@@ -45,6 +48,7 @@ public class Board implements Serializable {
         return grid[row][col];
     }
 
+    // checks if the board is completely filled
     public boolean isFull() {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
@@ -56,8 +60,9 @@ public class Board implements Serializable {
         return true;
     }
 
+    // checks if a player with given symbol has won
     public boolean checkWin(char symbol) {
-        // Check rows
+        // check rows for win
         for (int i = 0; i < size; i++) {
             boolean rowWin = true;
             for (int j = 0; j < size; j++) {
@@ -69,7 +74,7 @@ public class Board implements Serializable {
             if (rowWin) return true;
         }
 
-        // Check columns
+        // check columns for win
         for (int j = 0; j < size; j++) {
             boolean colWin = true;
             for (int i = 0; i < size; i++) {
@@ -81,8 +86,9 @@ public class Board implements Serializable {
             if (colWin) return true;
         }
 
-        // Check diagonals
+        // check diagonal from top-left to bottom-right
         boolean diag1Win = true;
+        // check diagonal from top-right to bottom-left
         boolean diag2Win = true;
         for (int i = 0; i < size; i++) {
             if (grid[i][i] != symbol) {

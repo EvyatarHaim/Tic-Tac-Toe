@@ -1,9 +1,11 @@
-// com.tictactoe.ui.LoginScreen
 package com.tictactoe.ui;
 
 import com.tictactoe.Utils;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -11,27 +13,48 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+import java.io.IOException;
+
 public class LoginScreen {
     private App app;
     private Scene scene;
 
-    private TextField nameField;
-    private RadioButton size3x3;
-    private RadioButton size4x4;
-    private RadioButton size5x5;
-    private ToggleGroup sizeGroup;
-    private Button playButton;
-    private Button statsButton;
+    @FXML private TextField nameField;
+    @FXML private RadioButton size3x3;
+    @FXML private RadioButton size4x4;
+    @FXML private RadioButton size5x5;
+    @FXML private ToggleGroup sizeGroup;
+    @FXML private Button playButton;
 
+    // create a new login screen
     public LoginScreen(App app) {
         this.app = app;
-        createProgrammaticUI();
+        createScene();
     }
 
-    private void createProgrammaticUI() {
-        System.out.println("Creating programmatic login UI");
+    // create the login screen
+    private void createScene() {
+        try {
+            // try to load the FXML file
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/LoginScreen.fxml"));
+            loader.setController(this);
+            Parent root = loader.load();
+            scene = new Scene(root, 300, 250);
 
-        // Create UI components
+            // set up play button action
+            playButton.setOnAction(e -> handlePlayButton());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+
+            // create UI manually if FXML loading fails
+            createManualLoginScreen();
+        }
+    }
+
+    // create the login screen manually if FXML loading fails
+    private void createManualLoginScreen() {
+        // create UI components
         Label titleLabel = new Label("Tic Tac Toe");
         titleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24));
 
@@ -53,26 +76,11 @@ public class LoginScreen {
         size5x5.setToggleGroup(sizeGroup);
 
         HBox sizeBox = new HBox(10, size3x3, size4x4, size5x5);
-        sizeBox.setAlignment(Pos.CENTER);
 
         playButton = new Button("Play");
         playButton.setPrefWidth(100);
 
-        statsButton = new Button("Statistics");
-        statsButton.setPrefWidth(100);
-
-        // Set up button actions
-        playButton.setOnAction(e -> handlePlay());
-        statsButton.setOnAction(e -> {
-            System.out.println("Stats button clicked");
-            app.showStatsScreen();
-        });
-
-        // Create a button box with both buttons
-        HBox buttonBox = new HBox(10, playButton, statsButton);
-        buttonBox.setAlignment(Pos.CENTER);
-
-        // Create layout
+        // create layout
         VBox layout = new VBox(15);
         layout.setPadding(new Insets(20));
         layout.setAlignment(Pos.CENTER);
@@ -82,22 +90,25 @@ public class LoginScreen {
                 nameField,
                 sizeLabel,
                 sizeBox,
-                buttonBox
+                playButton
         );
 
-        // Create scene
+        // create scene
         scene = new Scene(layout, 300, 250);
 
-        System.out.println("Login UI created with Play and Statistics buttons");
+        // set up play button action
+        playButton.setOnAction(event -> handlePlayButton());
     }
 
-    private void handlePlay() {
+    // handle play button click
+    private void handlePlayButton() {
         String name = nameField.getText().trim();
         if (name.isEmpty()) {
-            showError("Please enter your name.");
+            showError("Please enter your name");
             return;
         }
 
+        // determine selected board size
         int boardSize;
         if (size3x3.isSelected()) {
             boardSize = Utils.BOARD_SIZE_3X3;
@@ -107,10 +118,11 @@ public class LoginScreen {
             boardSize = Utils.BOARD_SIZE_5X5;
         }
 
-        // Send login request
+        // send login request to the server
         app.getClient().login(name, boardSize);
     }
 
+    // show error message
     public void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");

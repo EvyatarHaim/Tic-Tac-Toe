@@ -1,4 +1,3 @@
-// com.tictactoe.ui.GameScreen
 package com.tictactoe.ui;
 
 import com.tictactoe.Utils;
@@ -25,24 +24,23 @@ public class GameScreen {
     private App app;
     private Scene scene;
     private int boardSize;
-
-    // Game board UI
     private Button[][] boardButtons;
 
     @FXML private GridPane boardGrid;
     @FXML private Label statusLabel;
     @FXML private Label timerLabel;
 
-    // Game state
     private long gameStartTime;
     private Timer gameTimer;
 
+    // creates a new game screen
     public GameScreen(App app, int boardSize) {
         this.app = app;
         this.boardSize = boardSize;
         createScene();
     }
 
+    // creates the game screen
     private void createScene() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/GameScreen.fxml"));
@@ -50,70 +48,76 @@ public class GameScreen {
             Parent root = loader.load();
             scene = new Scene(root, 450, 500);
 
-            // Create game board
+            // create game board
             createGameBoard();
         } catch (IOException e) {
             e.printStackTrace();
 
-            // Fallback to programmatic UI creation
-            // Create game board
-            boardGrid = new GridPane();
-            boardGrid.setAlignment(Pos.CENTER);
-            boardGrid.setHgap(5);
-            boardGrid.setVgap(5);
-
-            boardButtons = new Button[boardSize][boardSize];
-
-            int buttonSize = 400 / boardSize;
-
-            for (int row = 0; row < boardSize; row++) {
-                for (int col = 0; col < boardSize; col++) {
-                    Button button = new Button();
-                    button.setPrefSize(buttonSize, buttonSize);
-                    button.setFont(Font.font("Arial", FontWeight.BOLD, buttonSize / 2));
-
-                    final int finalRow = row;
-                    final int finalCol = col;
-                    button.setOnAction(event -> {
-                        if (app.getClient().isMyTurn()) {
-                            button.setText(String.valueOf(app.getClient().getPlayerSymbol()));
-                            button.setDisable(true);
-                            app.getClient().makeMove(finalRow, finalCol);
-                        }
-                    });
-
-                    boardButtons[row][col] = button;
-                    boardGrid.add(button, col, row);
-                }
-            }
-
-            // Status label
-            statusLabel = new Label();
-            statusLabel.setFont(Font.font("Arial", 14));
-
-            // Timer label
-            timerLabel = new Label("Time: 0:00");
-            timerLabel.setFont(Font.font("Arial", 14));
-
-            // Layout
-            BorderPane layout = new BorderPane();
-            layout.setPadding(new Insets(20));
-
-            VBox topBox = new VBox(10);
-            topBox.setAlignment(Pos.CENTER);
-            topBox.getChildren().add(statusLabel);
-
-            BorderPane bottomPane = new BorderPane();
-            bottomPane.setLeft(timerLabel);
-
-            layout.setTop(topBox);
-            layout.setCenter(boardGrid);
-            layout.setBottom(bottomPane);
-
-            scene = new Scene(layout, 450, 500);
+            // fallback to manual UI creation if FXML loading fails
+            createManualGameScreen();
         }
     }
 
+    // creates the game screen manually if FXML loading fails
+    private void createManualGameScreen() {
+        // create game board
+        boardGrid = new GridPane();
+        boardGrid.setAlignment(Pos.CENTER);
+        boardGrid.setHgap(5);
+        boardGrid.setVgap(5);
+
+        boardButtons = new Button[boardSize][boardSize];
+
+        int buttonSize = 400 / boardSize;
+
+        for (int row = 0; row < boardSize; row++) {
+            for (int col = 0; col < boardSize; col++) {
+                Button button = new Button();
+                button.setPrefSize(buttonSize, buttonSize);
+                button.setFont(Font.font("Arial", FontWeight.BOLD, buttonSize / 2));
+
+                final int finalRow = row;
+                final int finalCol = col;
+                button.setOnAction(event -> {
+                    if (app.getClient().isMyTurn()) {
+                        button.setText(String.valueOf(app.getClient().getPlayerSymbol()));
+                        button.setDisable(true);
+                        app.getClient().makeMove(finalRow, finalCol);
+                    }
+                });
+
+                boardButtons[row][col] = button;
+                boardGrid.add(button, col, row);
+            }
+        }
+
+        // status label
+        statusLabel = new Label();
+        statusLabel.setFont(Font.font("Arial", 14));
+
+        // timer label
+        timerLabel = new Label("Time: 0:00");
+        timerLabel.setFont(Font.font("Arial", 14));
+
+        // create layout
+        BorderPane layout = new BorderPane();
+        layout.setPadding(new Insets(20));
+
+        VBox topBox = new VBox(10);
+        topBox.setAlignment(Pos.CENTER);
+        topBox.getChildren().add(statusLabel);
+
+        BorderPane bottomPane = new BorderPane();
+        bottomPane.setLeft(timerLabel);
+
+        layout.setTop(topBox);
+        layout.setCenter(boardGrid);
+        layout.setBottom(bottomPane);
+
+        scene = new Scene(layout, 450, 500);
+    }
+
+    // creates the game board
     private void createGameBoard() {
         boardGrid.getChildren().clear();
         boardButtons = new Button[boardSize][boardSize];
@@ -142,24 +146,16 @@ public class GameScreen {
         }
     }
 
-    /**
-     * Start the game
-     */
     public void startGame() {
         updateGameStatus();
         startGameTimer();
     }
 
-    /**
-     * Stop the game
-     */
     public void stopGame() {
         stopGameTimer();
     }
 
-    /**
-     * Handle move result message
-     */
+    // handles a move result message
     public void handleMoveResult(Utils.Message message) {
         int row = (int) message.getData(Utils.Keys.ROW);
         int col = (int) message.getData(Utils.Keys.COL);
@@ -172,9 +168,7 @@ public class GameScreen {
         updateGameStatus();
     }
 
-    /**
-     * Update the game status label
-     */
+    // updates the game status label
     private void updateGameStatus() {
         if (app.getClient().isMyTurn()) {
             statusLabel.setText("Your turn (" + app.getClient().getPlayerSymbol() + ")");
@@ -183,9 +177,7 @@ public class GameScreen {
         }
     }
 
-    /**
-     * Start the game timer
-     */
+    // start the game timer
     private void startGameTimer() {
         gameStartTime = System.currentTimeMillis();
         gameTimer = new Timer();
@@ -198,9 +190,7 @@ public class GameScreen {
         }, 0, 1000);
     }
 
-    /**
-     * Stop the game timer
-     */
+    // stop the game timer
     private void stopGameTimer() {
         if (gameTimer != null) {
             gameTimer.cancel();
@@ -208,9 +198,7 @@ public class GameScreen {
         }
     }
 
-    /**
-     * Format duration in milliseconds to a readable string
-     */
+    // formats duration from milliseconds to string
     private String formatDuration(long durationMs) {
         long seconds = durationMs / 1000;
         long minutes = seconds / 60;

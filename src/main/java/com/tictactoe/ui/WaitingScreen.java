@@ -1,4 +1,3 @@
-// com.tictactoe.ui.WaitingScreen
 package com.tictactoe.ui;
 
 import javafx.fxml.FXML;
@@ -21,13 +20,16 @@ public class WaitingScreen {
     @FXML private Label waitingLabel;
     @FXML private ProgressIndicator progressIndicator;
 
+    // create a new waiting screen
     public WaitingScreen(App app) {
         this.app = app;
         createScene();
     }
 
+    // create the waiting screen
     private void createScene() {
         try {
+            // try to load the FXML file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/WaitingScreen.fxml"));
             loader.setController(this);
             Parent root = loader.load();
@@ -35,20 +37,28 @@ public class WaitingScreen {
         } catch (IOException e) {
             e.printStackTrace();
 
-            // Fallback to programmatic UI creation
-            waitingLabel = new Label("Waiting for another player...");
-            waitingLabel.setFont(Font.font("Arial", 16));
-
-            progressIndicator = new ProgressIndicator();
-            progressIndicator.setPrefSize(50, 50);
-
-            VBox layout = new VBox(20);
-            layout.setPadding(new Insets(20));
-            layout.setAlignment(Pos.CENTER);
-            layout.getChildren().addAll(waitingLabel, progressIndicator);
-
-            scene = new Scene(layout, 300, 200);
+            // create UI manually if FXML loading fails
+            createManualWaitingScreen();
         }
+    }
+
+    // create the waiting screen manually if FXML loading fails
+    private void createManualWaitingScreen() {
+        // create UI components
+        waitingLabel = new Label("Waiting for another player...");
+        waitingLabel.setFont(Font.font("Arial", 16));
+
+        progressIndicator = new ProgressIndicator();
+        progressIndicator.setPrefSize(50, 50);
+
+        // create layout
+        VBox layout = new VBox(20);
+        layout.setPadding(new Insets(20));
+        layout.setAlignment(Pos.CENTER);
+        layout.getChildren().addAll(waitingLabel, progressIndicator);
+
+        // create scene
+        scene = new Scene(layout, 300, 200);
     }
 
     public Scene getScene() {

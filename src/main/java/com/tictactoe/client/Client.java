@@ -1,8 +1,6 @@
-// com.tictactoe.client.TicTacToeClient
 package com.tictactoe.client;
 
 import com.tictactoe.Utils;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -14,6 +12,8 @@ public class Client {
     private Socket socket;
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
+
+    // player info
     private String playerName;
     private int boardSize;
     private boolean connected;
@@ -23,30 +23,28 @@ public class Client {
     private String opponentName;
     private char opponentSymbol;
 
-    // Queue for received messages
+    // store received messages
     private BlockingQueue<Utils.Message> messageQueue;
 
-    // Message listener thread
+    // thread to listen for coming messages
     private Thread listenerThread;
 
-    // Message handler callback
+    // message handler
     private MessageHandler messageHandler;
 
-    // Interface for handling messages
+    // interface for handling messages
     public interface MessageHandler {
         void handleMessage(Utils.Message message);
     }
 
+    // creates a new client
     public Client() {
         this.messageQueue = new LinkedBlockingQueue<>();
         this.connected = false;
         this.inGame = false;
     }
 
-    /**
-     * Connect to the server
-     * @return true if connection successful, false otherwise
-     */
+    // connects to the server
     public boolean connect() {
         try {
             socket = new Socket(Utils.SERVER_HOST, Utils.SERVER_PORT);
@@ -54,7 +52,7 @@ public class Client {
             inputStream = new ObjectInputStream(socket.getInputStream());
             connected = true;
 
-            // Start message listener
+            // start listening for messages
             startMessageListener();
 
             return true;
@@ -64,21 +62,19 @@ public class Client {
         }
     }
 
-    /**
-     * Disconnect from the server
-     */
+    // disconnects from the server
     public void disconnect() {
         if (connected) {
             try {
-                // Send quit message
+                // send quit message
                 sendMessage(new Utils.Message(Utils.MessageType.QUIT));
 
-                // Stop the listener thread
+                // stop the listener thread
                 if (listenerThread != null) {
                     listenerThread.interrupt();
                 }
 
-                // Close streams and socket
+                // close streams and socket
                 if (inputStream != null) inputStream.close();
                 if (outputStream != null) outputStream.close();
                 if (socket != null) socket.close();
@@ -91,16 +87,14 @@ public class Client {
         }
     }
 
-    /**
-     * Start the message listener thread
-     */
+    // starts listening for server messages
     private void startMessageListener() {
         listenerThread = new Thread(() -> {
             try {
                 while (connected) {
                     Utils.Message message = (Utils.Message) inputStream.readObject();
 
-                    // Process message according to type
+                    // process the message based on the type
                     switch (message.getType()) {
                         case GAME_START:
                             handleGameStart(message);
@@ -113,10 +107,9 @@ public class Client {
                             break;
                     }
 
-                    // Add message to queue
+                    // add message to the queue
                     messageQueue.add(message);
 
-                    // Notify message handler
                     if (messageHandler != null) {
                         messageHandler.handleMessage(message);
                     }
@@ -133,12 +126,7 @@ public class Client {
         listenerThread.start();
     }
 
-    /**
-     * Send login request to the server
-     * @param playerName Player name
-     * @param boardSize Board size (3, 4, or 5)
-     * @return true if the login message was sent successfully
-     */
+    // sends login request to server
     public boolean login(String playerName, int boardSize) {
         if (!connected) {
             return false;
@@ -147,35 +135,30 @@ public class Client {
         this.playerName = playerName;
         this.boardSize = boardSize;
 
-        // Create login message
+        // create login message
         Utils.Message loginMessage = new Utils.Message(Utils.MessageType.LOGIN);
         loginMessage.setData(Utils.Keys.PLAYER_NAME, playerName);
         loginMessage.setData(Utils.Keys.BOARD_SIZE, boardSize);
 
-        // Send login message
+        // send login message
         return sendMessage(loginMessage);
     }
 
-    /**
-     * Make a move on the board
-     * @param row Row index
-     * @param col Column index
-     * @return true if the move message was sent successfully
-     */
+    // makes a move on the board
     public boolean makeMove(int row, int col) {
         if (!connected || !inGame || !myTurn) {
             return false;
         }
 
-        // Create move message
+        // create move message
         Utils.Message moveMessage = new Utils.Message(Utils.MessageType.MOVE);
         moveMessage.setData(Utils.Keys.ROW, row);
         moveMessage.setData(Utils.Keys.COL, col);
 
-        // Send move message
+        // send move message
         boolean sent = sendMessage(moveMessage);
 
-        // Temporarily set turn to false until move result is received
+        // set my turn to false until move result is received
         if (sent) {
             myTurn = false;
         }
@@ -183,11 +166,7 @@ public class Client {
         return sent;
     }
 
-    /**
-     * Send a message to the server
-     * @param message Message to send
-     * @return true if the message was sent successfully
-     */
+    // sends a message to the server
     private boolean sendMessage(Utils.Message message) {
         try {
             outputStream.writeObject(message);
@@ -200,10 +179,7 @@ public class Client {
         }
     }
 
-    /**
-     * Handle game start message
-     * @param message Game start message
-     */
+    // handles game start message
     private void handleGameStart(Utils.Message message) {
         playerSymbol = message.getData(Utils.Keys.PLAYER_SYMBOL).toString().charAt(0);
         opponentName = (String) message.getData(Utils.Keys.OPPONENT_NAME);
@@ -215,19 +191,13 @@ public class Client {
                 " against " + opponentName + " (" + opponentSymbol + ")");
     }
 
-    /**
-     * Handle move result message
-     * @param message Move result message
-     */
+    // handles move result message
     private void handleMoveResult(Utils.Message message) {
         String nextTurn = (String) message.getData(Utils.Keys.NEXT_TURN);
         myTurn = nextTurn.equals(playerName);
     }
 
-    /**
-     * Handle game over message
-     * @param message Game over message
-     */
+    // handles game over message
     private void handleGameOver(Utils.Message message) {
         inGame = false;
         myTurn = false;
@@ -249,11 +219,7 @@ public class Client {
         System.out.println("Game duration: " + formatDuration(gameDuration));
     }
 
-    /**
-     * Format duration in milliseconds to a readable string
-     * @param durationMs Duration in milliseconds
-     * @return Formatted duration string
-     */
+    // formats duration from milliseconds to minutes:seconds
     private String formatDuration(long durationMs) {
         long seconds = durationMs / 1000;
         long minutes = seconds / 60;
@@ -262,28 +228,17 @@ public class Client {
         return String.format("%d:%02d", minutes, seconds);
     }
 
-    /**
-     * Set message handler
-     * @param handler Message handler
-     */
+    // sets message handler
     public void setMessageHandler(MessageHandler handler) {
         this.messageHandler = handler;
     }
 
-    /**
-     * Get the next message from the queue
-     * @return Next message or null if queue is empty
-     */
+    // gets the next message from the queue
     public Utils.Message getNextMessage() {
         return messageQueue.poll();
     }
 
-    /**
-     * Wait for a specific message type
-     * @param type Message type to wait for
-     * @param timeoutMs Timeout in milliseconds
-     * @return The message, or null if timeout
-     */
+    // waits for a specific message type
     public Utils.Message waitForMessage(Utils.MessageType type, long timeoutMs) {
         long endTime = System.currentTimeMillis() + timeoutMs;
 
@@ -304,7 +259,6 @@ public class Client {
         return null;
     }
 
-    // Getters for client state
     public boolean isConnected() {
         return connected;
     }
